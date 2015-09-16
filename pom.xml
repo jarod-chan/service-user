@@ -2,7 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
+	
+	<groupId>cn.fyg</groupId>
     <artifactId>service-user</artifactId>
     <version>0.1.0</version>
 
@@ -33,6 +34,38 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+			<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq-meta</artifactId>
+			<version>3.6.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq-codegen</artifactId>
+			<version>3.6.2</version>
+		</dependency>
+		
+		<!-- Spring (transitive dependencies are not listed explicitly) -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+		</dependency>
+		
+		<!-- mysql driver -->
+ 		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency> 
+		
+		 <!-- DB Dependencies -->
+         <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+        </dependency> 
 	</dependencies>
 
     <properties>
@@ -56,6 +89,12 @@
             <id>spring-releases</id>
             <url>https://repo.spring.io/libs-release</url>
         </repository>
+       
+       <repository>
+		    <id>spring-milestones</id>
+		    <url>http://repo.spring.io/libs-milestone/</url>
+	   </repository>
+        
     </repositories>
     <pluginRepositories>
         <pluginRepository>
@@ -63,5 +102,5 @@
             <url>https://repo.spring.io/libs-release</url>
         </pluginRepository>
     </pluginRepositories>
-    <groupId>cn.fyg</groupId>
+  
 </project>

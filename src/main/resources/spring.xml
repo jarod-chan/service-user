@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd">
+
+    <!-- This is needed if you want to use the @Transactional annotation -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close" >
+        <!-- These properties are replaced by Maven "resources" -->
+       <property name="url" value="jdbc:mysql://localhost:3306/library" />
+       <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+       <property name="username" value="root" />
+       <property name="password" value="0" />
+    </bean>
+
+    <!-- Configure Spring's transaction manager to use a DataSource -->
+    <bean id="transactionManager"
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <!-- Configure jOOQ's ConnectionProvider to use Spring's TransactionAwareDataSourceProxy,
+         which can dynamically discover the transaction context -->
+    <bean class="org.jooq.impl.DataSourceConnectionProvider" name="connectionProvider">
+        <constructor-arg>
+        	   <bean id="transactionAwareDataSource"
+			        class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
+			        <constructor-arg ref="dataSource" />
+			    </bean>
+        </constructor-arg>
+    </bean>
+     
+
+    <!-- Configure the DSL object, optionally overriding jOOQ Exceptions with Spring Exceptions -->
+    <bean id="dsl" class="org.jooq.impl.DefaultDSLContext">
+        <constructor-arg ref="config" />
+    </bean>
+    
+    <bean id="exceptionTranslator" class="exception.ExceptionTranslator" />
+    
+    <!-- Invoking an internal, package-private constructor for the example
+         Implement your own Configuration for more reliable behaviour -->
+    <bean class="org.jooq.impl.DefaultConfiguration" name="config">
+        <constructor-arg index="0" ref="connectionProvider" />
+        <!-- Pass in your jOOQ TransactionProvider if you want to use jOOQ's transaction API -->
+        <constructor-arg index="1"><null /></constructor-arg>
+        <constructor-arg index="2"><null /></constructor-arg>
+        <constructor-arg index="3"><null /></constructor-arg>
+        <constructor-arg index="4">
+            <list>
+                <bean class="org.jooq.impl.DefaultExecuteListenerProvider">
+                    <constructor-arg index="0" ref="exceptionTranslator"/>
+                </bean>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="5"><null /></constructor-arg>
+        <constructor-arg index="6"><value type="org.jooq.SQLDialect">MYSQL</value></constructor-arg>
+        <constructor-arg index="7"><null /></constructor-arg>
+        <constructor-arg index="8"><null /></constructor-arg>
+    </bean>
+    
+
+</beans>
