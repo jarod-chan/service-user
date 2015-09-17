@@ -1,4 +1,4 @@
-package cn.fyg.service.user.interfaces;
+package cn.fyg.service.user;
 
 
 import org.springframework.boot.SpringApplication;
