@@ -12,7 +12,7 @@
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close" >
         <!-- These properties are replaced by Maven "resources" -->
-       <property name="url" value="jdbc:mysql://localhost:3306/library" />
+       <property name="url" value="jdbc:mysql://localhost:3306/service-user-dev" />
        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
        <property name="username" value="root" />
        <property name="password" value="0" />
@@ -41,7 +41,7 @@
         <constructor-arg ref="config" />
     </bean>
     
-    <bean id="exceptionTranslator" class="exception.ExceptionTranslator" />
+    <bean id="exceptionTranslator" class="cn.fyg.service.user.orm.exception.ExceptionTranslator" />
     
     <!-- Invoking an internal, package-private constructor for the example
          Implement your own Configuration for more reliable behaviour -->

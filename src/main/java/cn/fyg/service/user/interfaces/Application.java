@@ -1,4 +1,5 @@
-package hello;
+package cn.fyg.service.user.interfaces;
+
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

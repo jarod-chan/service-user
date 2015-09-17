@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<configuration xmlns="http://www.jooq.org/xsd/jooq-codegen-3.4.0.xsd">
+<configuration xmlns="http://www.jooq.org/xsd/jooq-codegen-3.6.0.xsd">
   <!-- Configure the database connection here -->
   <jdbc>
     <driver>com.mysql.jdbc.Driver</driver>
-    <url>jdbc:mysql://localhost:3306/library</url>
+    <url>jdbc:mysql://localhost:3306/service-user-dev</url>
     <user>root</user>
     <password>0</password>
   </jdbc>
@@ -20,7 +20,8 @@
 
       <!-- The database schema (or in the absence of schema support, in your RDBMS this
            can be the owner, user, database name) to be generated -->
-      <inputSchema>library</inputSchema>
+      <inputSchema>service-user-dev</inputSchema>
+      
 
       <!-- All elements that are generated from your schema
            (A Java regular expression. Use the pipe to separate several expressions)
@@ -43,7 +44,7 @@
 
     <target>
       <!-- The destination package of your generated classes (within the destination directory) -->
-      <packageName>db.jooq</packageName>
+      <packageName>cn.fyg.service.user.orm.jooq</packageName>
 
       <!-- The destination directory of your generated classes -->
       <directory>src/main/java</directory>
