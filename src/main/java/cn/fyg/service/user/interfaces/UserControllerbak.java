@@ -17,15 +17,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import cn.fyg.service.user.domain.common.Retv;
-import cn.fyg.service.user.domain.user.UserDto;
 import cn.fyg.service.user.domain.user.UserService;
 import cn.fyg.service.user.orm.jooq.tables.pojos.User;
 import cn.fyg.service.user.orm.jooq.tables.records.UserRecord;
 
 @RestController
-@RequestMapping("user")
-public class UserController {
+@RequestMapping("user1")
+public class UserControllerbak {
 	
 	@Autowired
 	DSLContext dsl;
@@ -33,31 +31,32 @@ public class UserController {
 	UserService userService;
     
 	@RequestMapping(value = "", method = RequestMethod.GET)
-	public ResponseEntity<List<UserDto>> list() {
-		List<UserDto> users =  dsl.selectFrom(USER).fetchInto(UserDto.class);
+	public ResponseEntity<List<User>> list() {
+		List<User> users =  dsl.selectFrom(USER).fetchInto(User.class);
 		if(users.isEmpty()){
-			return new ResponseEntity<List<UserDto>>(HttpStatus.NO_CONTENT);//You many decide to return HttpStatus.NOT_FOUND
+			return new ResponseEntity<List<User>>(HttpStatus.NO_CONTENT);//You many decide to return HttpStatus.NOT_FOUND
 		}
-		return new ResponseEntity<List<UserDto>>(users, HttpStatus.OK);
+		return new ResponseEntity<List<User>>(users, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/register", method = RequestMethod.POST)
-	public ResponseEntity<Retv<Long>> create(@RequestBody User user, 	UriComponentsBuilder ucBuilder) {
-		Retv<Long> retv = this.userService.register(user.getUname(), user.getUemail(), user.getUphone(), user.getPassword(),user.getRealname());
+	@RequestMapping(value = "", method = RequestMethod.POST)
+	public ResponseEntity<Void> create(@RequestBody User user, 	UriComponentsBuilder ucBuilder) {
+		System.out.println("Creating User " + user.getUname());
 	
-		if (retv.fail()) {
-			System.out.println(retv.resaon());
-			return new ResponseEntity<Retv<Long>>(retv,HttpStatus.CONFLICT);
+		if (userService.isUserExist(user)) {
+			System.out.println("A User with name " + user.getUname() + " already exist");
+			return new ResponseEntity<Void>(HttpStatus.CONFLICT);
 		}
 	
+		UserRecord record = dsl.newRecord(USER);
+		record.from(user);
+		record.setCreatetime(System.currentTimeMillis());
+		record.store();
+	
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(ucBuilder.path("/user/{id}").buildAndExpand(retv.data()).toUri());
-		return new ResponseEntity<Retv<Long>>(retv,headers, HttpStatus.CREATED);
+		headers.setLocation(ucBuilder.path("/user/{id}").buildAndExpand(user.getFyid()).toUri());
+		return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
 	}
-	
-	//@RequestMapping(value = "/changestate", method = RequestMethod.POST)
-	
-	
 
 	@RequestMapping(value = "{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<User> getUser(@PathVariable("id") long fyid) {
