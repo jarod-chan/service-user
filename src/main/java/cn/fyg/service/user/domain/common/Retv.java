@@ -3,31 +3,31 @@ package cn.fyg.service.user.domain.common;
 public class Retv<T> {
 	private final T data;
 	private final boolean success;
-	private final String reason;
+	private final String info;
 	
 	
 	
-	private Retv(T data, boolean success,String reason) {
+	private Retv(T data, boolean success,String info) {
 		super();
 		this.data = data;
 		this.success =success;
-		this.reason = reason;
-	}
-	
-	private Retv(boolean success,String reason) {
-		super();
-		this.data=null;
-		this.success =success;
-		this.reason = reason;
+		this.info = info;
 	}
 
 	public static  <T> Retv<T> error(String reason){
-		return new Retv<T>(false,reason);
+		return new Retv<T>(null,false,reason);
 	}
 
+	public static <T> Retv<T> ret(){
+		return new Retv<T>(null,true,null);
+	}
 
 	public static <T> Retv<T> ret(T data){
 		return new Retv<T>(data,true,null);
+	}
+	
+	public static <T> Retv<T> ret(T data,String info){
+		return new Retv<T>(data,true,info);
 	}
 	
 	public boolean success(){
@@ -42,16 +42,22 @@ public class Retv<T> {
 		return this.data;
 	}
 	
-	public String resaon(){
-		return this.reason;
+	public String info(){
+		return this.info;
 	}
 
 	public String getInfo() {
-		return this.reason;
+		return this.info;
 	}
 	
 	public T getData() {
 		return this.data;
 	}
+
+	public boolean isSuccess() {
+		return success;
+	}
+	
+	
 
 }
