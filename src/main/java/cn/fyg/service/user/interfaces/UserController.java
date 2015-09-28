@@ -7,17 +7,12 @@ import java.util.Map;
 
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import cn.fyg.service.user.domain.common.Retv;
 import cn.fyg.service.user.domain.user.UserDto;
@@ -36,58 +31,43 @@ public class UserController {
 	UserService userService;
     
 	@RequestMapping(value = "", method = RequestMethod.GET)
-	public ResponseEntity<List<UserDto>> list() {
-		List<UserDto> users =  dsl.selectFrom(USER).fetchInto(UserDto.class);
-		if(users.isEmpty()){
-			return new ResponseEntity<List<UserDto>>(HttpStatus.NO_CONTENT);//You many decide to return HttpStatus.NOT_FOUND
-		}
-		return new ResponseEntity<List<UserDto>>(users, HttpStatus.OK);
+	public Retv<List<UserDto>> list() {
+		List<UserDto> users =  dsl.selectFrom(USER).orderBy(USER.FYID.desc()).fetchInto(UserDto.class);
+		return Retv.ret(users);
 	}
 	
-	@RequestMapping(value = "{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<UserDto> getUser(@PathVariable("id") long fyid) {
-		System.out.println("Fetching User with id " + fyid);
+	@RequestMapping(value = "{id}", method = RequestMethod.GET)
+	public Retv<UserDto> getUser(@PathVariable("id") long fyid) {
 		UserRecord userRecord = dsl.fetchOne(USER,USER.FYID.equal(fyid));
-		if (userRecord == null) {
-			System.out.println("User with id " + fyid + " not found");
-			return new ResponseEntity<UserDto>(HttpStatus.NOT_FOUND);
+		if(userRecord==null){
+			return Retv.error("无法找到该用户");
 		}
-		return new ResponseEntity<UserDto>(userRecord.into(UserDto.class), HttpStatus.OK);
+		return Retv.ret(userRecord.into(UserDto.class));
 	}
-
+	
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
-	public ResponseEntity<Retv<Long>> register(@RequestBody User user, 	UriComponentsBuilder ucBuilder) {
+	public Retv<Long> register(@RequestBody User user) {
 		Retv<Long> retv = this.userService.register(user.getUname(), user.getUemail(), user.getUphone(), user.getPassword(),user.getRealname());
-	
-		if (retv.fail()) {
-			System.out.println(retv.info());
-			return new ResponseEntity<Retv<Long>>(retv,HttpStatus.CONFLICT);
-		}
-	
-		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(ucBuilder.path("/user/{id}").buildAndExpand(retv.data()).toUri());
-		return new ResponseEntity<Retv<Long>>(retv,headers, HttpStatus.CREATED);
+		return retv;
 	}
 	
 	@RequestMapping(value = "{id}/changestate", method = RequestMethod.POST)
-	public ResponseEntity<Retv<Void>> changestate(@PathVariable("id") long fyid,@RequestBody Map<String,Object> map) {
+	public Retv<Void> changestate(@PathVariable("id") long fyid,@RequestBody Map<String,Object> map) {
 		UserState state=UserState.valueOf(map.get("state").toString());
 		Retv<Void> retv = this.userService.changeState(fyid, state);
-		return new ResponseEntity<Retv<Void>>(retv, HttpStatus.OK);
+		return retv;
 	}
 	
 	@RequestMapping(value = "{id}", method = RequestMethod.POST)
-	public ResponseEntity<Retv<UserDto>> updateUser(@PathVariable("id") long fyid, @RequestBody UserDto user) {
-		System.out.println("Updating User " + fyid);
+	public Retv<UserDto> updateUser(@PathVariable("id") long fyid, @RequestBody UserDto user) {
 		Retv<UserDto> retv = this.userService.update(fyid, user);
-		return new ResponseEntity<Retv<UserDto>>(retv, HttpStatus.OK);
+		return retv;
 	}
 	
 	@RequestMapping(value = "{id}/password", method = RequestMethod.POST)
-	public ResponseEntity<Retv<Void>> password(@PathVariable("id") long fyid, @RequestParam("password") String password) {
-		System.out.println("change password User " + fyid);
+	public Retv<Void> password(@PathVariable("id") long fyid, @RequestParam("password") String password) {
 		Retv<Void> retv = this.userService.changePassword(fyid, password);
-		return new ResponseEntity<Retv<Void>>(retv, HttpStatus.OK);
+		return retv;
 	}
 	
 }

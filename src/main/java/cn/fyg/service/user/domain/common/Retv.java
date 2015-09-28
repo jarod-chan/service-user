@@ -14,8 +14,8 @@ public class Retv<T> {
 		this.info = info;
 	}
 
-	public static  <T> Retv<T> error(String reason){
-		return new Retv<T>(null,false,reason);
+	public static  <T> Retv<T> error(String info){
+		return new Retv<T>(null,false,info);
 	}
 
 	public static <T> Retv<T> ret(){
@@ -26,8 +26,8 @@ public class Retv<T> {
 		return new Retv<T>(data,true,null);
 	}
 	
-	public static <T> Retv<T> ret(T data,String info){
-		return new Retv<T>(data,true,info);
+	public static <T> Retv<T> ret(String info){
+		return new Retv<T>(null,true,info);
 	}
 	
 	public boolean success(){

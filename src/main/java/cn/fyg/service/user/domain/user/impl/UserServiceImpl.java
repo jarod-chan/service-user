@@ -20,7 +20,6 @@ import cn.fyg.service.user.domain.common.Retv;
 import cn.fyg.service.user.domain.user.UserDto;
 import cn.fyg.service.user.domain.user.UserService;
 import cn.fyg.service.user.domain.user.UserState;
-import cn.fyg.service.user.orm.jooq.tables.pojos.User;
 import cn.fyg.service.user.orm.jooq.tables.records.UserRecord;
 
 @Component
@@ -28,12 +27,6 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	DSLContext dsl;
-
-	@Override
-	public boolean isUserExist(User user) {
-		// TODO Auto-generated method stub
-		return false;
-	}
 
 	@Override
 	@Transactional
@@ -160,6 +153,9 @@ public class UserServiceImpl implements UserService {
 		UserRecord userRecord = dsl.fetchOne(USER,USER.FYID.equal(fyid));
 		if (userRecord == null) {
 			return Retv.error("无法找到用户");
+		}
+		if(StringUtils.isBlank(password)){
+			return Retv.error("密码不能为空");
 		}
 		password=EasUtil.encrypt(password);
 		userRecord.setPassword(password);
